@@ -400,7 +400,53 @@ def solution_features(solutions):
   return {"problemSkills":problemSkills, "userSkills": userSkills}
 
 defaultGetResponse = """
-<div>Post a json body in the format problemKey -> userKey -> userCode</div>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+<div id="app">
+  {{message}}
+  <button @click="postData">Fetch</button>
+  <br>
+  <pre>{{solutionData}}</pre>
+</div>
+<script src="https://unpkg.com/vue"></script>
+<script>
+  
+  var app = new Vue({
+    el: "#app",
+    data:{
+      message: "hello",
+      solutionData: {"problemA":{"userB":"print(x)"}}
+    },
+    methods:{
+      postData: function() {
+          var data = this.solutionData;
+          fetch('https://ltp7y8q1ak.execute-api.ap-southeast-1.amazonaws.com/default/code_analysis', { // the URI
+    method: 'POST', // the method
+    body: JSON.stringify(data) // the body
+    })
+    .then(response => {
+    // we received the response and print the status code
+      console.log(response.status)
+      // return response body as JSON
+      return response.json()
+    })
+    .then(json => {
+      // print the JSON
+      console.log(json)
+    })
+      }
+    }
+  })
+</script>
+</body>
+</html>
 """
 
 import json

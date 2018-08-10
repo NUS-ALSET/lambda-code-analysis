@@ -410,10 +410,18 @@ defaultGetResponse = """
 </head>
 <body>
 <div id="app">
-  {{message}}
-  <button @click="postData">Fetch</button>
+  <h3>Change the example solution code to post for a user</h3>
+  <textarea v-model="solutionText">
+  </textarea>
   <br>
-  <pre>{{solutionData}}</pre>
+  <button @click="postData">Analyze</button>
+
+  <br>
+  <h3>Solutions to post</h3>
+  <pre>{{solutions}}</pre>
+  <hr>
+  <h3>Last result</h3>
+  <pre>{{lastResult}}</pre>
 </div>
 <script src="https://unpkg.com/vue"></script>
 <script>
@@ -421,12 +429,17 @@ defaultGetResponse = """
   var app = new Vue({
     el: "#app",
     data:{
-      message: "hello",
-      solutionData: {"problemA":{"userB":"print(x)"}}
+      solutionText: "print(x)",
+      lastResult: ""
+    },
+    computed: {
+        solutions: function(){
+            return {"problemAA":{"userBB": this.solutionText}}
+        }
     },
     methods:{
       postData: function() {
-          var data = this.solutionData;
+          var data = this.solutions;
           fetch('https://ltp7y8q1ak.execute-api.ap-southeast-1.amazonaws.com/default/code_analysis', { // the URI
     method: 'POST', // the method
     body: JSON.stringify(data) // the body
@@ -440,6 +453,7 @@ defaultGetResponse = """
     .then(json => {
       // print the JSON
       console.log(json)
+      this.lastResult = json
     })
       }
     }

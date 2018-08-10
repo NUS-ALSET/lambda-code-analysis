@@ -361,7 +361,6 @@ def solution_features(solutions):
   """
   problemSkills -> ProblemKey -> featureType -> feature -> userKey -> True
   userSkills       -> UserKey -> featureType -> feature -> problemKey -> True
-
   """
 
   problemSkills = {}
@@ -400,24 +399,31 @@ def solution_features(solutions):
 
   return {"problemSkills":problemSkills, "userSkills": userSkills}
 
+defaultGetResponse = """
+<div>Post a json body in the format problemKey -> userKey -> userCode</div>
+"""
 
 import json
 
 # event is a dict
 def lambda_handler(event, context):
-
+    dummy = {}
+    body = defaultGetResponse
     if event['httpMethod'] == 'GET':
         dummy['httpMethod'] = 'GET'
     else:
         if event["body"]:
             dummy = json.loads(event["body"])
+            body = json.dumps(solution_features(dummy))
         else:
             dummy['httpMethod'] = 'POST'
+            defaultPostBody = {"problemA":{"userB":"print(x)"}}
+            body = json.dumps(solution_features(defaultPostBody))
 
     result = {
         "isBase64Encoded": False,
         "statusCode": 200,
-        "headers": {},
-        "body": json.dumps(solution_features(dummy))
+        "headers": {"content-type": "text/html"},
+        "body": body
     }
     return result

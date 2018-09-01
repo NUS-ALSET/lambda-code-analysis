@@ -326,10 +326,10 @@ def getAllImports(a):
     for child in ast.walk(a):
         if type(child) == ast.Import:
             for alias in child.names:
-                imports.add(alias.asname if alias.asname != None else alias.name)
+                imports.add(alias.name)
         elif type(child) == ast.ImportFrom:
             for alias in child.names: # these are all functions
-                imports.add(alias.asname if alias.asname != None else alias.name)
+                imports.add(child.module + "." + alias.name)
 
 
     result = {}

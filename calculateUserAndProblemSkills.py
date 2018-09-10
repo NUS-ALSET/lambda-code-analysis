@@ -314,6 +314,14 @@ def getFuncCalls(tree):
       result[item] += 1
     return dict(result)
 
+def getFuncDefs(tree):
+    r = set()
+    for node in ast.walk(tree):
+        if type(node) is ast.FunctionDef:
+            r.add(node.name)
+
+    return list(r)
+
 ################################################################################
 # Imports
 ################################################################################
@@ -344,13 +352,19 @@ def getAllImports(a):
 def code_features(src):
   tree = ast.parse(src)
 
+  funcCalls = getFuncCalls(tree)
   result = {
             "statements":  getAllStatements(tree),
-            "functions":   getFuncCalls(tree),
+            "functions":   funcCalls,
             "imports":     getAllImports(tree),
             "expressions": getAllExpr(tree),
             "constructs" : getAllConstructs(tree)
            }
+
+  definedFunctions = getFuncDefs(tree)
+  for df in definedFunctions:
+      if df in funcCalls:
+        del funcCalls[df]
 
   return result
 
@@ -425,7 +439,7 @@ defaultGetResponse = """
 </div>
 <script src="https://unpkg.com/vue"></script>
 <script>
-  
+
   var app = new Vue({
     el: "#app",
     data:{
